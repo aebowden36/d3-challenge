@@ -25,15 +25,15 @@ var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 ​
   // Initial Params
-var chosenXAxis = " ";
-var chosenYAxis = " ";
+var chosenXAxis = "age";
+var chosenYAxis = "smoker";
 ​
 // function used for updating x-scale var upon click on axis label
 function xScale(data, chosenXAxis) {
     // create scales
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(data, d => d[chosenXAxis]) * 0.9,
-        d3.max(data, d => d[chosenXAxis]) * 1.1
+      .domain([d3.min(data, d => d[chosenXAxis]) * 0.8,
+        d3.max(data, d => d[chosenXAxis]) * 1.2
       ])
       .range([0, width]);
   
@@ -57,8 +57,8 @@ function yScale(data, chosenYAxis) {
 function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
 ​
     circlesGroup.transition()
-      .duration()
-      .attr("", d => newXScale(d[chosenXAxis]))
+      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]))
       .attr("", d => newXScale(d[chosenXAxis]));
   
     return circlesGroup;
@@ -69,7 +69,7 @@ function renderXText(circlesGroup, newXScale, chosenXAxis) {
 ​
     circlesGroup.transition()
       .duration()
-      .attr("", d => newXScale(d[chosenXAxis]));
+      .attr("cx", d => newXScale(d[chosenXAxis]));
   
     return circlesGroup;
 }
@@ -126,12 +126,14 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 ​
 // Read the CSV data
 d3.csv("data.csv").then(function(data, err) {
-    
+    if(err) throw err;
+
     // parse data
     data.forEach(d => {
       // convert to numbers 
 	  d.poverty = +d.poverty;
-      
+      d.age = +d.age;
+      d.smokes = +d.smokes;
     });
   
     // xLinearScale function above csv import
@@ -146,6 +148,7 @@ d3.csv("data.csv").then(function(data, err) {
   
     // append x axis
     var xAxis = chartGroup.append("g")
+      .classed("x-axis", true)
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
   
