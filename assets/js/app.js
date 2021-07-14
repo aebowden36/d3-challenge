@@ -108,11 +108,11 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
   var toolTip = d3.tip()
     .attr("class", "tooltip")
     .offset([80, -60])
-    .style("color", "white")
-    .style("background", "black")
-    .style("border", "4 px solid black")
+    .style("color", "black")
+    .style("background", "lightblue")
+    .style("border", "black")
     .style("border-width", "4px")
-    .style("border-radius", "12px")
+    .style("border-radius", "14px")
     .style("padding", "5px")
     .html(function (d) {
       return (`<div>${d.state}<br>${xlabel} ${d[chosenXAxis]}%<br>${ylabel} ${d[chosenYAxis]}%</div>`);
@@ -185,7 +185,7 @@ d3.csv("assets/data/data.csv").then(function (data, err) {
     .text(d => d.abbr)
     .attr("x", d => xLinearScale(d[chosenXAxis]))
     .attr("y", d => yLinearScale(d[chosenYAxis]) + 5) //to center the text in the circles
-    .attr("dy", 3)
+    .attr("dy", 4)
     .classed('stateText', true);
 
   // Create group for three x-axis labels
