@@ -59,18 +59,18 @@ function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
     circlesGroup.transition()
       .duration(1000)
       .attr("cx", d => newXScale(d[chosenXAxis]))
-      .attr("", d => newXScale(d[chosenXAxis]));
+      .attr("cy", d => newXScale(d[chosenYAxis]));
   
     return circlesGroup;
 }
 ​
 // Updating text locations for the texts on X axis -- Try someting similar for Y axis
-function renderXText(circlesGroup, newXScale, chosenXAxis) {
+function renderXText(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 ​
     circlesGroup.transition()
-      .duration()
-      .attr("cx", d => newXScale(d[chosenXAxis]));
-  
+      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]))
+      .attr("cy", d => newYScale(d[chosenYAxis]));
     return circlesGroup;
 }
 ​
@@ -81,19 +81,19 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     var xlabel;
     var ylabel;
   
-    if (chosenXAxis === "") {
-      xlabel = ":";
+    if (chosenXAxis === "age") {
+      xlabel = "Age:";
     }
-    else if (chosenXAxis === "") {
-      xlabel = ":";
+    else if (chosenXAxis === "poverty") {
+      xlabel = "Poverty:";
     }
     
 ​
-    if (chosenYAxis === ''){
-        ylabel = ":"
+    if (chosenYAxis === 'smokers'){
+        ylabel = "Smoker:"
     }
-    else if (chosenYAxis === ''){
-        ylabel = ":"
+    else if (chosenYAxis === 'healthcare'){
+        ylabel = "No Healthcare:"
     }
     
   
@@ -125,15 +125,16 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 ​
 ​
 // Read the CSV data
-d3.csv("data.csv").then(function(data, err) {
+d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
     if(err) throw err;
 
     // parse data
     data.forEach(d => {
       // convert to numbers 
-	  d.poverty = +d.poverty;
+	    d.poverty = +d.poverty;
       d.age = +d.age;
       d.smokes = +d.smokes;
+      d.healthcare = +d.healthcare
     });
   
     // xLinearScale function above csv import
