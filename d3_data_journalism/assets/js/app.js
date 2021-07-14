@@ -9,7 +9,7 @@ var margin = {
   left: 100
 };
 
-var width = svgWidth - margin.right - margin.left;
+var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart,
@@ -47,8 +47,22 @@ function yScale(data, chosenYAxis) {
     return yLinearScale; 
 }
 
+// function used for x axis
+function renderXAxis(newXScale, xAxis){
+  var bottomAxis = d3.axisBottom(newXScale);
+  xAxis.transition().duration(1000).call(bottomAxis);
+  return xAxis;
+}
+
+// function used for y axis
+function renderYAxis(newYScale, yAxis){
+  var leftAxis = d3.axisLeft(newYScale);
+  yAxis.transition().duration(1000).call(leftAxis);
+  return yAxis
+}
+
 // functions used for updating X axis -- Try someting similar for Y axis
-function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
+function renderXCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
       .duration(1000)
@@ -78,32 +92,34 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
       xlabel = "Poverty:";
     }
     
-    if (chosenYAxis === 'smokers'){
-        ylabel = "Smoker:"
+    if (chosenYAxis === 'smokes'){
+        ylabel = "Smokes:"
     }
     else if (chosenYAxis === 'healthcare'){
-        ylabel = "No Healthcare:"
+        ylabel = "Healthcare:"
     }
     
     var toolTip = d3.tip()
       .attr("class", "tooltip")
       .offset([80, -60])
       .style("color", "blue")
+      .style("background", "black")
       .style("border", "black")
-      .style("border-width", "2")
-      .style("border-radius", "16")
+      .style("border-width", "2px")
+      .style("border-radius", "16px")
+      .style("padding", "5px")
       .html(function(d) {
-        return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}%<br>${ylabel} ${d[chosenYAxis]}%`);
+        return (`<div>${d.state}<br>${xlabel} ${d[chosenXAxis]}%<br>${ylabel} ${d[chosenYAxis]}%</div>`);
       });
 
     circlesGroup.call(toolTip);
 
     circlesGroup.on("mouseover", function(data) {
-      toolTip.show(data);
+      toolTip.show(data, this);
     })
       // onmouseout event
     .on("mouseout", function(data, index) {
-    toolTip.hide(data);
+    toolTip.hide(data, this);
     });
     return circlesGroup;
 }
@@ -159,8 +175,9 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
     // append text inside circles
     var circlesText = circlesGroup.append("text")
       .text(d => d.abbr)
-      .attr("cx", d => xLinearScale(d[chosenXAxis]))
-      .attr("cy", d => yLinearScale(d[chosenYAxis])+5) //to center the text in the circles
+      .attr("x", d => xLinearScale(d[chosenXAxis]))
+      .attr("y", d => yLinearScale(d[chosenYAxis])+5) //to center the text in the circles
+      .attr("dy", 3)
       .classed('stateText', true);
   
     // Create group for three x-axis labels
@@ -172,6 +189,7 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
       .attr("y", 20)
       .attr("value", "age") // value to grab for event listener
       .classed("active", true)
+      .classed("aText", true)
       .text("Age (Median)");
 
     var povertyLabel = xlabelsGroup.append("text")
@@ -179,6 +197,7 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
       .attr("y", 40)
       .attr("value", "poverty") // value to grab for event listener
       .classed("inactive", true)
+      .classed("aText", true)
       .text("In Poverty (%)");
 
 	// Similarly add more labels for each of the axis you want to see
@@ -187,15 +206,18 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
   
   var smokesLabel = ylabelsGroup.append("text")
     .attr("x", 0)
-    .attr("y", -20)
+    .attr("y", 0-20)
     .attr("value", "smokes") // value to grab for event listener
+    .attr("transform", "rotate(-90)")
     .classed("active", true)
+    .classed("aText", true)
     .text("Smoker (%)");
 	
   var healthcareLabel = xlabelsGroup.append("text")
     .attr("x", 0)
-    .attr("y", 40)
+    .attr("y", 0-40)
     .attr("value", "healthcare") // value to grab for event listener
+    .attr("transform", "rotate(-90)")
     .classed("inactive", true)
     .text("No Healthcare (%)");
 	// updateToolTip function above csv import
@@ -214,7 +236,7 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
       // updates x axis with transition
       yAxis = renderYAxis(yLinearScale, yAxis)
       // updates circles with new x values
-      circles = renderXCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
+      circles = renderXCircles(circles, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
       //updating text within circles
       circlesText = renderXText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
       // updates tooltips with new info
@@ -253,7 +275,7 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
           // updates x axis with transition
           xAxis = renderXAxis(xLinearScale, xAxis)
           // updates circles with new x values
-          circles = renderXCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
+          circles = renderXCircles(circles, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
           //updating text within circles
           circlesText = renderXText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
           // updates tooltips with new info
