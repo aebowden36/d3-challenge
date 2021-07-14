@@ -155,6 +155,7 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
   
     // append y axis
     var yAxis = chartGroup.append("g")
+      .classed('y-axis', true)
       .call(leftAxis);
   
     // append initial circles
@@ -164,31 +165,39 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
       .append("g");
 ​
     var circles = circlesGroup.append("circle")
-      .attr("", d => xLinearScale(d[chosenXAxis]))
-      .attr("", d => yLinearScale(d[chosenYAxis]))
-      .attr("r", )
+      .attr("cx", d => xLinearScale(d[chosenXAxis]))
+      .attr("cy", d => yLinearScale(d[chosenYAxis]))
+      .attr("r", 14)
       .classed('stateCircle', true);
 ​
     // append text inside circles
     var circlesText = circlesGroup.append("text")
       .text(d => d.abbr)
-      .attr("", d => xLinearScale(d[chosenXAxis]))
-      .attr("", d => yLinearScale(d[chosenYAxis])+5) //to center the text in the circles
+      .attr("cx", d => xLinearScale(d[chosenXAxis]))
+      .attr("cy", d => yLinearScale(d[chosenYAxis])+5) //to center the text in the circles
       .classed('stateText', true);
   
     // Create group for three x-axis labels
     var xlabelsGroup = chartGroup.append("g")
       .attr("transform", `translate(${width / 2}, ${height + 20})`);
 	
-    var oneLabel1 = xlabelsGroup.append("text")
+    var ageLabel = xlabelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 20)
-      .attr("value", "Some Label") // value to grab for event listener
+      .attr("value", "age") // value to grab for event listener
       .classed("active", true)
-      .text("Some label  (%)");
+      .text("Age (Median)");
 ​
 	// Similarly add more labels for each of the axis you want to see
-	
+  var ylabelsGroup = chartGroup.append("g")
+    .attr("transform", `translate(${0-margin.left/4}, ${height/2})`);
+  
+  var smokesLabel = ylabelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", -20)
+    .attr("value", "smokes") // value to grab for event listener
+    .classed("active", true)
+    .text("Smoker (%)");
 	
 	// updateToolTip function above csv import
     circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
@@ -205,30 +214,30 @@ d3.csv("d3_data_journalism/assets/data/data.csv").then(function(data, err) {
   
           
           // functions here found above csv import and updates x scale for new data
-          xLinearScale = 
+          xLinearScale = xScale(data, chosenXAxis)
   
           // updates x axis with transition
-          xAxis = 
+          xAxis = renderXAxis(xLinearScale, xAxis)
   
           // updates circles with new x values
-          circles = 
+          circles = renderXCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
 ​
         //   updating text within circles
-          circlesText = 
+          circlesText = renderXText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis)
   
           // updates tooltips with new info
           circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
   
           // changes classes to change bold text
-          if (chosenXAxis === "") {
-            SomeLabel
+          if (chosenXAxis === "age") {
+            ageLabel
               .classed("active", true)
               .classed("inactive", false);
             OtherLabel
               .classed("active", false)
               .classed("inactive", true);
           }
-          else if(chosenXAxis === ''){
+          else if(chosenXAxis === 'poverty'){
             SomeOtherlabel
               .classed("active", true)
               .classed("inactive", false);
