@@ -230,7 +230,7 @@ d3.csv("assets/data/data.csv").then(function (data, err) {
     .classed("aText", true)
     .text("Lacks Healthcare (%)");
 
-  var smokesLabel = xlabelsGroup.append("text")
+  var smokesLabel = ylabelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 0 - 40)
     .attr("value", "smokes") // value to grab for event listener
@@ -240,9 +240,9 @@ d3.csv("assets/data/data.csv").then(function (data, err) {
     .classed("aText", true)
     .text("Smoker (%)");
 
-  var obesityLabel = xlabelsGroup.append("text")
+  var obesityLabel = ylabelsGroup.append("text")
     .attr("x", 0)
-    .attr("y", 0 - 40)
+    .attr("y", 0 - 60)
     .attr("value", "obesity") // value to grab for event listener
     .attr("transform", "rotate(-90)")
     .attr("dy", "1em")
