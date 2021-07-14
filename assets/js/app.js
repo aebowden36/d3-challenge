@@ -132,7 +132,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 
 
 // Read the CSV data
-d3.csv("d3_data_journalism/assets/data/data.csv").then(function (data, err) {
+d3.csv("assets/data/data.csv").then(function (data, err) {
   if (err) throw err;
 
   // parse data
